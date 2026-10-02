@@ -359,9 +359,9 @@
             display: inline-block;
             cursor: pointer;
             height: 100%;
-            &:hover {
+            &:hover, &:focus-within {
                 .dplayer-volume-bar-wrap .dplayer-volume-bar {
-                    width: 45px;
+                    width: 100px;
                 }
                 .dplayer-volume-bar-wrap .dplayer-volume-bar .dplayer-volume-bar-inner .dplayer-thumb {
                     transform: scale(1);
@@ -369,7 +369,7 @@
             }
             &.dplayer-volume-active {
                 .dplayer-volume-bar-wrap .dplayer-volume-bar {
-                    width: 45px;
+                    width: 100px;
                 }
                 .dplayer-volume-bar-wrap .dplayer-volume-bar .dplayer-volume-bar-inner .dplayer-thumb {
                     transform: scale(1);

@@ -287,12 +287,15 @@ class Controller {
     }
 
     initVolumeButton(): void {
-        const vWidth = 35;
+        const vWidth = 100;
+        const volumeKeySteps: Record<string, number> = { ArrowRight: 1, ArrowLeft: -1 };
 
+        const volumeAt = (event: Event) => Math.round(utils.getRelativeX(event as TouchEvent | MouseEvent, this.player.template.volumeBarWrap)) / vWidth;
+        const volumeStep = (step: number) => {
+            this.player.volume(Math.round(this.player.volume() * 100 + step) / 100);
+        };
         const volumeMove = (event: Event) => {
-            const e = event as TouchEvent | MouseEvent;
-            const percentage = (utils.getRelativeX(e, this.player.template.volumeBarWrap) - 5.5) / vWidth;
-            this.player.volume(percentage);
+            this.player.volume(volumeAt(event));
         };
         const volumeUp = () => {
             document.removeEventListener(utils.nameMap.dragEnd, volumeUp);
@@ -304,10 +307,22 @@ class Controller {
         };
 
         this.player.template.volumeBarWrapWrap.addEventListener('click', (event: Event) => {
-            const e = event as TouchEvent | MouseEvent;
-            const percentage = (utils.getRelativeX(e, this.player.template.volumeBarWrap) - 5.5) / vWidth;
-            this.player.volume(percentage);
+            this.player.volume(volumeAt(event));
         });
+        this.player.template.volumeButton.addEventListener('keydown', (event: KeyboardEvent) => {
+            const step = volumeKeySteps[event.key];
+            if (step && !event.ctrlKey && !event.shiftKey && !event.altKey && !event.metaKey) {
+                event.preventDefault();
+                event.stopPropagation();
+                volumeStep(step);
+            }
+        });
+        this.player.template.volumeButton.addEventListener('wheel', (event: WheelEvent) => {
+            if (event.deltaY !== 0) {
+                event.preventDefault();
+                volumeStep(event.deltaY < 0 ? 1 : -1);
+            }
+        }, { passive: false });
         this.player.template.volumeBarWrapWrap.addEventListener(utils.nameMap.dragStart, () => {
             document.addEventListener(utils.nameMap.dragMove, volumeMove);
             document.addEventListener(utils.nameMap.dragEnd, volumeUp);
